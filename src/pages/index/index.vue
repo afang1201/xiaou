@@ -8,6 +8,7 @@
           text-color="#fff"
           router
           active-text-color="#ffd04b"
+          :default-active="curActive"
         >
           <el-menu-item index="/index">
             <i class="el-icon-menu"></i>
@@ -52,6 +53,12 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 export default {
+  data () {
+    return {
+      // 解决刷新侧边菜单不变色跳转问题
+      curActive: ''
+    }
+  },
   methods: {
     ...mapActions({
       reqUserInfo: 'reqUserInfo'
@@ -80,6 +87,14 @@ export default {
     ...mapGetters({
       userInfo: 'userInfo'
     })
+  },
+  mounted () {
+    this.curActive = this.$route.path
+    // console.log(this.$route.path)
+    // let defaultMenu = window.location.hash.substr(
+    //   window.location.hash.indexOf('/')
+    // )
+    // this.curActive = defaultMenu
   }
 }
 </script>

@@ -10,7 +10,8 @@ export default {
   props: [],
   components: {},
   data () {
-    return {}
+    return {
+    }
   },
   computed: {
     ...mapGetters({

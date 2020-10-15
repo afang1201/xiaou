@@ -1,6 +1,8 @@
 import axios from 'axios'
 import Vue from 'vue'
 import store from '../store'
+import router from '../router'
+import {warningAlert} from './alert'
 // import qs from 'qs'
 let baseUrl = '/api'
 // 开发环境下使用
@@ -18,6 +20,13 @@ axios.interceptors.response.use(res => {
   console.group('=====本次请求路径是:' + res.config.url)
   console.log(res)
   console.groupEnd()
+  // res.data.msg = '登录已过期或访问权限受限'
+  // 用户掉线了
+  if (res.data.msg === '登录已过期或访问权限受限') {
+    warningAlert(res.data.msg)
+    router.push('/login')
+  }
+
   return res
 })
 

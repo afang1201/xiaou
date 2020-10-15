@@ -120,8 +120,11 @@ export default {
       reqGoodsList: 'goods/reqGoodsList',
       reqseckillList: 'seckill/reqseckillList'
     }),
+    // 测试
     cl () {
+      console.log('--------form-----')
       console.log(this.form)
+      console.log('--------seckillList-----')
       console.log(this.seckillList)
     },
     // 获取菜单详情 （1条）
@@ -145,8 +148,10 @@ export default {
       //   }
       // })
       // this.getSecond()
+      // let form1 = this.seckillList.find(function (item) { return item.id === id })
       let form = JSON.stringify(this.seckillList.find(function (item) { return item.id === id }))
       let form1 = JSON.parse(form)
+      // console.log(form1)
       form1.begintime = new Date(Number(form1.begintime))
       form1.endtime = new Date(Number(form1.endtime))
       await this.getSecond()

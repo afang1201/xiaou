@@ -6,10 +6,11 @@
           <el-input v-model="form.title" @change="cl"></el-input>
         </el-form-item>
         <el-form-item label="活动时间" required >
+
           <el-col :span="11">
             <el-form-item prop='begintime'>
               <el-date-picker
-                type="date"
+                type="datetime"
                 placeholder="开始日期"
                 v-model="form.begintime"
                 style="width: 100%;"
@@ -20,7 +21,7 @@
           <el-col :span="11">
             <el-form-item prop='endtime'>
               <el-date-picker
-                type="date"
+                type="datetime"
                 placeholder="结束日期"
                 v-model="form.endtime"
                 style="width: 100%;"
@@ -66,7 +67,8 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 // axios请求
-import {addSecklist, editSecklist, getCateList} from '../../../utils/request'
+// eslint-disable-next-line no-unused-vars
+import {addSecklist, editSecklist, getCateList, getSecklistOne} from '../../../utils/request'
 export default {
   data () {
     // 验证日期的规则
@@ -184,8 +186,8 @@ export default {
     update () {
       this.$refs.addFormRef.validate(valid => {
         if (!valid) return
-        this.form.begintime = new Date(this.form.begintime).getTime()
-        this.form.endtime = new Date(this.form.endtime).getTime()
+        this.form.begintime = new Date(this.form.begintime).getTime() + ''
+        this.form.endtime = new Date(this.form.endtime).getTime() + ''
         editSecklist(this.form).then((res) => {
           if (res.data.code === 200) {
             this.$message.success(res.data.msg)

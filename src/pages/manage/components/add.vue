@@ -18,7 +18,7 @@
           <el-input v-model="form.username"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop='password'>
-          <el-input v-model="form.password"></el-input>
+          <el-input v-model="form.password" placeholder='为了您的账户安全，原始密码已隐藏'></el-input>
         </el-form-item>
 
         <el-form-item label="状态">
@@ -97,7 +97,7 @@ export default {
       getManageOne(uid).then(res => {
         if (res.data.code === 200) {
           this.form = res.data.list
-          this.form.password = '*******'
+          this.form.password = ''
         } else {
           this.$message.error(res.data.msg)
         }

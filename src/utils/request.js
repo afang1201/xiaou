@@ -7,7 +7,7 @@ import {warningAlert} from './alert'
 let baseUrl = '/api'
 // 开发环境下使用
 Vue.prototype.$imgPre = 'http://localhost:3000'
-// // 打包
+// 打包
 // let baseUrl = ''
 // Vue.prototype.$imgPre = ''
 // 请求拦截

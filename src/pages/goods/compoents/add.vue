@@ -272,7 +272,7 @@ export default {
   },
   mounted () {
     this.reqCate()
-    this.reqspecsList()
+    this.reqspecsList({page: '', size: ''})
     if (!this.$route.params.type) {
       this.$router.go(-1)
       this.$message.warning('页面信息已更改请重新选择要编辑的商品')

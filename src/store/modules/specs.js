@@ -29,8 +29,13 @@ const mutations = {
 
 const actions = {
   // 获取规格列表信息
-  async reqspecsList (context) {
-    await getSpecsList({page: context.state.page, size: context.state.size}).then(res => {
+  async reqspecsList (context, form) {
+    if (!form) {
+      var info = {page: context.state.page, size: context.state.size}
+    } else {
+      info = {}
+    }
+    await getSpecsList(info).then(res => {
       // 如果取list的时候，取到null,那么有可能是最后一页没数据了，需要减一页，再次请求list
       let list = res.data.list ? res.data.list : []
       // 如果取到的数据是null,并且不是第一页，那么就页码减1，重新请求list

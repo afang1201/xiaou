@@ -44,11 +44,11 @@ export const indexRoutes = [
     }
   },
   {
-    path: '/spec',
+    path: '/specs',
     name: '商品规格',
     component: () => import('../pages/specs/specs.vue'),
     beforeEnter (to, from, next) {
-      checkedEnter('/spec', next)
+      checkedEnter('/specs', next)
     }
   },
   {

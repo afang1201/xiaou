@@ -1,35 +1,22 @@
 <template>
   <div>
     <el-dialog :title="info.isAdd ? '添加菜单' : '编辑菜单'" :visible.sync="info.isshow" @closed="close">
-      <el-form ref="addFormRef" :model="form" label-width="80px" :rules='formRules'>
-        <el-form-item label="活动名称" prop='title'>
-          <el-input v-model="form.title" @change="cl"></el-input>
+      <el-form ref="addFormRef" :model="form" label-width="80px" :rules="formRules">
+        <el-form-item label="活动名称" prop="title">
+          <el-input v-model="form.title" ></el-input>
         </el-form-item>
-        <el-form-item label="活动时间" required >
-
-          <el-col :span="11">
-            <el-form-item prop='begintime'>
-              <el-date-picker
-                type="datetime"
-                placeholder="开始日期"
-                v-model="form.begintime"
-                style="width: 100%;"
-              ></el-date-picker>
-            </el-form-item>
-          </el-col>
-          <el-col class="line" :span="2">至</el-col>
-          <el-col :span="11">
-            <el-form-item prop='endtime'>
-              <el-date-picker
-                type="datetime"
-                placeholder="结束日期"
-                v-model="form.endtime"
-                style="width: 100%;"
-              ></el-date-picker>
-            </el-form-item>
-          </el-col>
+        <el-form-item label="活动时间" required>
+          <el-date-picker
+            v-model="date"
+            type="datetimerange"
+            :picker-options="pickerOptions"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            align="right"
+          ></el-date-picker>
         </el-form-item>
-        <el-form-item label="一级分类" prop='first_cateid'>
+        <el-form-item label="一级分类" prop="first_cateid">
           <el-select v-model="form.first_cateid" placeholder="请选择" @change="changeCate">
             <el-option
               v-for="(item,i) in cateList"
@@ -39,17 +26,22 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="二级分类" prop='second_cateid'>
+        <el-form-item label="二级分类" prop="second_cateid">
           <el-select v-model="form.second_cateid" placeholder="请选择" @change="changeSecond">
-           <el-option label="请选择" value="" disabled></el-option>
-          <el-option v-for="(item,i) in cate2" :key="i" :label="item.catename" :value="item.id"></el-option>
-        </el-select>
+            <el-option label="请选择" value disabled></el-option>
+            <el-option v-for="(item,i) in cate2" :key="i" :label="item.catename" :value="item.id"></el-option>
+          </el-select>
         </el-form-item>
-         <el-form-item label="商品" prop='second_cateid'>
+        <el-form-item label="商品" prop="second_cateid">
           <el-select v-model="form.goodsid" placeholder="请选择">
-            <el-option label="请选择" value="" disabled></el-option>
-          <el-option v-for="(item,i) in goodList" :key="i" :label="item.goodsname" :value="item.id"></el-option>
-        </el-select>
+            <el-option label="请选择" value disabled></el-option>
+            <el-option
+              v-for="(item,i) in goodList"
+              :key="i"
+              :label="item.goodsname"
+              :value="item.id"
+            ></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="状态">
           <el-switch v-model="form.status" :active-value="1" :inactive-value="2"></el-switch>
@@ -67,21 +59,42 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 // axios请求
-// eslint-disable-next-line no-unused-vars
-import {addSecklist, editSecklist, getCateList, getSecklistOne} from '../../../utils/request'
+import {
+  addSecklist,
+  editSecklist,
+  getCateList,
+  getSecklistOne
+} from '../../../utils/request'
 export default {
   data () {
-    // 验证日期的规则
-    var checkDate = (rule, value, cb) => {
-      let a = new Date(Number(this.form.begintime))
-      let b = new Date(Number(this.form.endtime))
-      if (a < b) {
-        return cb()
-      }
-
-      cb(new Error('结束日期必须大于开始日期'))
-    }
     return {
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近三个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      },
       form: {
         title: '',
         endtime: null,
@@ -93,26 +106,17 @@ export default {
       },
       cate2: [],
       formRules: {
-        title: [
-          {required: true, message: '请输入活动名称', trigger: 'blur'}
-        ],
-        endtime: [
-          {required: true, message: '请输入活动结束时间', trigger: 'change'},
-          { validator: checkDate, trigger: 'change' }
-        ],
-        begintime: [
-          {required: true, message: '请输入活动开始时间', trigger: 'change'}
-        ],
+        title: [{ required: true, message: '请输入活动名称', trigger: 'blur' }],
         first_cateid: [
-          {required: true, message: '请选择一级分类', trigger: 'change'}
+          { required: true, message: '请选择一级分类', trigger: 'change' }
         ],
         second_cateid: [
-          {required: true, message: '请选择二级分类', trigger: 'change'}
+          { required: true, message: '请选择二级分类', trigger: 'change' }
         ],
-        goodsid: [
-          {required: true, message: '请选择商品', trigger: 'change'}
-        ]
-      }
+        goodsid: [{ required: true, message: '请选择商品', trigger: 'change' }]
+      },
+      // 日期设置初始类型为字符串，避免后期因复杂数据更改导致v-model不生效
+      date: ''
     }
   },
   props: ['info'],
@@ -122,53 +126,39 @@ export default {
       reqGoodsList: 'goods/reqGoodsList',
       reqseckillList: 'seckill/reqseckillList'
     }),
-    // 测试
-    cl () {
-      console.log('--------form-----')
-      console.log(this.form)
-      console.log('--------seckillList-----')
-      console.log(this.seckillList)
-    },
     // 获取菜单详情 （1条）
     async look (id) {
-    //  后台参数不合法弃用
-      // getSecklistOne(id).then((res) => {
-      //   if (res.data.code === 200) {
-      //     // 这个时候form是没有id的
-      //     this.form = res.data.list
-      //     this.form.id = id
-      //     // 获取二级分类
-      //     this.getSecond()
-      //     // 获取商品
-      //     this.reqGoodsList({fid: this.form.first_cateid, sid: this.form.second_cateid})
-      //     // 时间戳
-      //     this.form.begintime = new Date(this.form.begintime)
-      //     this.form.endtime = new Date(this.form.endtime)
-      //     console.log(this.form)
-      //   } else {
-      //     this.$message.error(res.data.msg)
-      //   }
-      // })
-      // this.getSecond()
-      // let form1 = this.seckillList.find(function (item) { return item.id === id })
-      let form = JSON.stringify(this.seckillList.find(function (item) { return item.id === id }))
-      let form1 = JSON.parse(form)
-      // console.log(form1)
-      form1.begintime = new Date(Number(form1.begintime))
-      form1.endtime = new Date(Number(form1.endtime))
-      await this.getSecond()
-      await this.reqGoodsList({fid: form1.first_cateid, sid: form1.second_cateid})
-      this.form = form1
+      getSecklistOne(id).then(async (res) => {
+        if (res.data.code === 200) {
+          // 时间戳
+          res.data.list.begintime = new Date(Number(res.data.list.begintime))
+          res.data.list.endtime = new Date(Number(res.data.list.endtime))
+          this.form = res.data.list
+          // 获取二级分类
+          await this.getSecond()
+          // 获取商品
+          await this.reqGoodsList({
+            fid: res.data.list.first_cateid,
+            sid: res.data.list.second_cateid
+          })
+
+          // 这个时候form是没有id的
+          this.form.id = id
+          this.date = [this.form.begintime + '', this.form.begintime + '']
+        } else {
+          this.$message.error(res.data.msg)
+        }
+      })
     },
     // 添加菜单
     add () {
-      this.$refs.addFormRef.validate(valid => {
+      this.$refs.addFormRef.validate((valid) => {
         if (!valid) return
-        this.form.begintime = new Date(this.form.begintime).getTime()
-        this.form.endtime = new Date(this.form.endtime).getTime()
+        this.form.begintime = new Date(this.date[0]).getTime() + ''
+        this.form.endtime = new Date(this.date[1]).getTime() + ''
         addSecklist(this.form).then((res) => {
           if (res.data.code === 200) {
-          // 成功
+            // 成功
             this.$message.success(res.data.msg)
             // 数据重置
             this.empty()
@@ -184,10 +174,10 @@ export default {
     },
     // 修改菜单
     update () {
-      this.$refs.addFormRef.validate(valid => {
+      this.$refs.addFormRef.validate((valid) => {
         if (!valid) return
-        this.form.begintime = new Date(this.form.begintime).getTime() + ''
-        this.form.endtime = new Date(this.form.endtime).getTime() + ''
+        this.form.begintime = new Date(this.date[0]).getTime() + ''
+        this.form.endtime = new Date(this.date[1]).getTime() + ''
         editSecklist(this.form).then((res) => {
           if (res.data.code === 200) {
             this.$message.success(res.data.msg)
@@ -245,7 +235,10 @@ export default {
     // 二级分类修改
     changeSecond () {
       this.form.goodsid = ''
-      this.reqGoodsList({fid: this.form.first_cateid, sid: this.form.second_cateid})
+      this.reqGoodsList({
+        fid: this.form.first_cateid,
+        sid: this.form.second_cateid
+      })
     }
   },
   computed: {
@@ -272,7 +265,7 @@ export default {
 .el-button {
   margin: 0;
 }
-.line{
+.line {
   text-align: center;
 }
 </style>

@@ -18,7 +18,7 @@
     <el-table-column prop="url" label="菜单地址"></el-table-column>
     <el-table-column prop="type" label="状态">
       <template slot-scope="scope">
-        <el-button type="primary" v-if="scope.row.type==1">启用</el-button>
+        <el-button type="primary" v-if="scope.row.status==1">启用</el-button>
         <el-button type="danger" v-else>禁用</el-button>
       </template>
     </el-table-column>
